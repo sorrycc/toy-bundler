@@ -4,7 +4,7 @@ build({
   config: {
     externals: {
       react: 'React',
-      'react-dom': 'ReactDOM',
+      'react-dom/client': 'ReactDOM',
     },
   },
   cwd: 'example',
