@@ -6,4 +6,4 @@ function App() {
   return <div>Hello {foo}</div>;
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
