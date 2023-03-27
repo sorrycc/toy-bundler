@@ -5,18 +5,26 @@ import { transform } from './transform';
 import { analyzeDependencies } from './dependency';
 import { generate } from './generate';
 import fs from 'fs';
+import assert from 'assert';
 
 export async function build(opts: {
   config: IConfig;
   cwd: string;
   output?: string;
+  entry?: string;
 }) {
   let globalId = 0;
   const modules = new Map<string, IModule>();
   const assets = new Map<string, string>();
   const cwd = path.resolve(opts.cwd || process.cwd());
-  const entryPoint = path.join(cwd, 'index.tsx');
   const output = path.resolve(opts.output || path.join(cwd, 'dist'));
+
+  // get entry point
+  const entryPoint = path.resolve(cwd, opts.entry || 'index.tsx');
+  assert(
+    fs.existsSync(entryPoint),
+    `Entry point ${entryPoint} does not exist.`,
+  );
 
   // build
   const seen = new Set();
@@ -75,6 +83,13 @@ export async function build(opts: {
   fs.writeFileSync(path.join(output, 'index.js'), generateResult);
 
   // emit
+  const indexHtmlFile = path.join(cwd, 'index.html');
+  if (fs.existsSync(indexHtmlFile)) {
+    fs.writeFileSync(
+      path.join(output, 'index.html'),
+      fs.readFileSync(indexHtmlFile),
+    );
+  }
   assets;
 
   console.log('✅');

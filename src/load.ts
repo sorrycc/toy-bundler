@@ -1,5 +1,5 @@
-import fs from "fs";
+import fs from 'fs';
 
 export function load(module: string) {
-  return fs.readFileSync(module, "utf-8");
+  return fs.readFileSync(module, 'utf-8');
 }

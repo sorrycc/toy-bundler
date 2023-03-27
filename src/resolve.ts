@@ -12,6 +12,7 @@ export function resolve(opts: {
   if (opts.config.externals?.[dep]) {
     return dep;
   }
+  // TODO: support alias
   return resolveSync(dep, {
     basedir: path.dirname(opts.filePath),
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
