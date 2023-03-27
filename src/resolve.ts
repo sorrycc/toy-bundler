@@ -1,8 +1,19 @@
-import { IModule } from "./types";
+import type { IConfig } from './types';
+import path from 'path';
+import { sync as resolveSync } from 'resolve';
 
 export function resolve(opts: {
-  module: IModule;
-  dependencyName: string;
+  filePath: string;
+  dependency: string;
+  config: IConfig;
 }) {
-  return opts.dependencyName;
+  const dep = opts.dependency;
+  // handle externals first
+  if (opts.config.externals?.[dep]) {
+    return dep;
+  }
+  return resolveSync(dep, {
+    basedir: path.dirname(opts.filePath),
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
+  });
 }

@@ -1,5 +1,5 @@
 import { IConfig, IDependencyMap } from './types';
-import resolve from 'resolve';
+import { resolve } from './resolve';
 import path from 'path';
 
 export function analyzeDependencies(opts: {
@@ -9,15 +9,10 @@ export function analyzeDependencies(opts: {
 }) {
   const map: IDependencyMap = new Map();
   for (const dep of opts.dependencies) {
-    // resolve
-    // handle externals first
-    if (opts.config.externals?.[dep]) {
-      map.set(dep, dep);
-      continue;
-    }
-    const resolvedPath = resolve.sync(dep, {
-      basedir: path.dirname(opts.filePath),
-      extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    const resolvedPath = resolve({
+      filePath: opts.filePath,
+      dependency: dep,
+      config: opts.config,
     });
     map.set(dep, resolvedPath);
   }
