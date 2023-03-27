@@ -6,3 +6,7 @@ export type IModule = {
   content: string;
   dependencyMap: IDependencyMap;
 };
+
+export type IConfig = {
+  externals?: Record<string, string>;
+};

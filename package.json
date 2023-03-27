@@ -14,7 +14,7 @@
     "build": "father build",
     "dev": "father dev",
     "doctor": "father doctor",
-    "test": "./bin/toy-bundler.js > test.js && node test.js && rm -rf test.js"
+    "test": "./bin/toy-bundler.js"
   },
   "dependencies": {
     "@types/resolve": "^1.20.2",

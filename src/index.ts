@@ -1,15 +1,22 @@
 import path from 'path';
-import type { IModule } from './types';
+import type { IConfig, IModule } from './types';
 import { load } from './load';
 import { transform } from './transform';
 import { analyzeDependencies } from './dependency';
 import { generate } from './generate';
+import fs from 'fs';
 
-export async function build() {
-  let id = 0;
+export async function build(opts: {
+  config: IConfig;
+  cwd: string;
+  output?: string;
+}) {
+  let globalId = 0;
   const modules = new Map<string, IModule>();
-  const cwd = process.cwd();
-  const entryPoint = path.join(cwd, 'example', 'index.tsx');
+  const assets = new Map<string, string>();
+  const cwd = path.resolve(opts.cwd || process.cwd());
+  const entryPoint = path.join(cwd, 'index.tsx');
+  const output = path.resolve(opts.output || path.join(cwd, 'dist'));
 
   // build
   const seen = new Set();
@@ -20,21 +27,38 @@ export async function build() {
       continue;
     }
     seen.add(module);
+    let id = String(globalId);
+    globalId += 1;
+
+    // externals
+    if (opts.config.externals?.[module]) {
+      modules.set(module, {
+        id,
+        content: '/*external react*/',
+        code: `module.exports = ${opts.config.externals?.[module]};`,
+        dependencyMap: new Map(),
+      });
+      continue;
+    }
 
     // load
     let content = load(module);
 
     // transform
-    const transformResult = await transform({ content, filePath: module });
+    const transformResult = await transform({
+      content,
+      filePath: module,
+    });
 
     // analyze dependencies + resolve
     const dependencyMap = analyzeDependencies({
       filePath: module,
       dependencies: transformResult.dependencies,
+      config: opts.config,
     });
 
     const metaData = {
-      id: String(id++),
+      id,
       content,
       code: transformResult.content,
       dependencyMap,
@@ -44,6 +68,14 @@ export async function build() {
   }
 
   // generate
+  if (!fs.existsSync(output)) {
+    fs.mkdirSync(output);
+  }
   const generateResult = generate(modules);
-  console.log(generateResult);
+  fs.writeFileSync(path.join(output, 'index.js'), generateResult);
+
+  // emit
+  assets;
+
+  console.log('✅');
 }

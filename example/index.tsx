@@ -1,2 +1,9 @@
 import { foo } from './foo';
-console.log(foo + 'bar');
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+function App() {
+  return <div>Hello {foo}</div>;
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
