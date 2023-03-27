@@ -33,17 +33,3 @@ function getLoader(filePath: string) {
   }
   return 'file';
 }
-
-// if main
-if (require.main === module) {
-  (async () => {
-    const res = await transform({
-      content: `import { foo } from './foo'; foo();`,
-      filePath: 'foo.tsx',
-    });
-    console.log(res);
-  })().catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
-}
